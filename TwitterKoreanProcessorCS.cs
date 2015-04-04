@@ -21,18 +21,15 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 THE SOFTWARE.
 */
-
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Moda.Korean.TwitterKoreanProcessorCS
 {
     using com.twitter.penguin.korean;
+    using com.twitter.penguin.korean.tokenizer;
     using ikvm.extensions;
+    
 
     public static class TwitterKoreanProcessorCS
     {
@@ -52,23 +49,74 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
 
         public static StemmedTextWithTokens Stem(string text)
         {
-            var result = TwitterKoreanProcessor.stem(text);
-            var temp = new StemmedTextWithTokens(result);
+            var scalaResult = TwitterKoreanProcessor.stem(text);
+            var result = new StemmedTextWithTokens(scalaResult);
 
-            return temp;
-            throw new NotImplementedException();
+            return result;
+        }
+
+        public static IEnumerable<KoreanToken> Tokenize(string text, bool normalize= true, bool stem = true, bool keepSpace = false)
+        {
+            var scalaResults = TwitterKoreanProcessor.tokenize(text, normalize, stem, keepSpace);
+            List<KoreanToken> results = ScalaSeqConverter<KoreanToken, KoreanTokenizer.KoreanToken>(
+                scalaResults, (scalaResult) => { return new KoreanToken(scalaResult); });
+
+            return results;
         }
 
         public static IEnumerable<string> TokenizeToStrings(string text, bool normalize = true, bool stem = true, bool keepSpace = false)
         {
-            var result = TwitterKoreanProcessor.tokenize(text, normalize, stem, keepSpace);
+            var scalaResults = TwitterKoreanProcessor.tokenize(text, normalize, stem, keepSpace);
+            List<string> results = ScalaSeqConverter<string, KoreanTokenizer.KoreanToken>(
+                scalaResults, (scalaResult) => { return scalaResult.toString(); });
 
-            List<string> results = new List<string>();
-            for (int i = 0; i < result.size(); i++)
+            return results;
+        }
+
+        public static List<KoreanSegment> TokenizeWithIndex(string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static KoreanSegmentWithText TokenizeWithIndexWithStemmer(string text)
+        {
+            throw new NotImplementedException();
+        }
+
+        public static List<string> ExtractPhrases(string text, bool filterSpam = false)
+        {
+            var scalaResults = TwitterKoreanProcessor.extractPhrases(text, filterSpam);
+            List<string> results = ScalaSeqStringConverter(scalaResults);
+            
+            return results;
+        }
+
+        private static List<T> ScalaSeqConverter<T, TScala>(scala.collection.Seq sequences, Func<TScala,T> convertFunc)
+            where TScala : class
+            where T : class
+        {
+            List<T> results = new List<T>();
+
+            for (int i = 0; i < sequences.size(); i++)
             {
-                var midResult = result.apply(i) as com.twitter.penguin.korean.tokenizer.KoreanTokenizer.KoreanToken;
-                string s = midResult.text();
-                results.Add(s);
+                TScala scalaResult = sequences.apply(i) as TScala;
+                T result = convertFunc(scalaResult);
+                results.Add(result);
+            }
+
+            return results;
+        }
+
+
+        private static List<string> ScalaSeqStringConverter(scala.collection.Seq sequences)
+        {
+            List<string> results = new List<string>();
+
+            for (int i = 0; i < sequences.size(); i++)
+            {
+                var scalaResult = sequences.apply(i);
+                string result = scalaResult.toString();
+                results.Add(result);
             }
 
             return results;
@@ -94,6 +142,19 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
                 this.Tokens.Add(koreanToken);
             }
         }
+    }
+
+    public class KoreanSegmentWithText
+    {
+        public string Text { get; set; }
+        public List<KoreanSegment> Segments { get; set; }
+    }
+
+    public class KoreanSegment
+    {
+        public int Start { get; set; }
+        public int Length { get; set; }
+        public KoreanToken token { get; set; }
     }
 
     public class KoreanToken
