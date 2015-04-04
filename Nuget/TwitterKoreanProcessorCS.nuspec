@@ -5,11 +5,14 @@
         <version>$version$</version>
         <title>TwitterKoreanProcessorCS</title>
         <authors>modamoda</authors>
-        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+        <owners>modamoda</owners>
+        <licenseUrl>https://github.com/modamoda/TwitterKoreanProcessorCS/blob/master/LICENSE</licenseUrl>
+        <projectUrl>https://github.com/modamoda/TwitterKoreanProcessorCS</projectUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
         <description>Simple wrapper for twitter-korean-text</description>
         <summary>Simple wrapper for twitter-korean-text</summary>
         <releaseNotes>Alpha release</releaseNotes>
+        <copyright>Copyright (c) 2015 modamoda</copyright>
         <tags>Korean Twitter</tags>
         <dependencies>
             <group targetFramework=".NETFramework4.5">
