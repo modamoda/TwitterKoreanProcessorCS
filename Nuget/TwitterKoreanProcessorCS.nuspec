@@ -1,0 +1,28 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+    <metadata>
+        <id>Moda.Korean.TwitterKoreanProcessorCS</id>
+        <version>$version$</version>
+        <title>TwitterKoreanProcessorCS</title>
+        <authors>modamoda</authors>
+        <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
+        <requireLicenseAcceptance>false</requireLicenseAcceptance>
+        <description>Simple wrapper for twitter-korean-text
+        </description>
+        <summary>Simple wrapper for twitter-korean-text</summary>
+        <releaseNotes>Alpha release</releaseNotes>
+        <tags>Korean Twitter</tags>
+        <dependencies>
+            <group targetFramework=".NETFramework4.5">
+                <dependency id="IKVM.OpenJDK.Core" version="7.2.4630.5" />
+                <dependency id="IKVM.OpenJDK.Jdbc" version="7.2.4630.5" />
+                <dependency id="IKVM.OpenJDK.Util" version="7.2.4630.5" />
+                <dependency id="IKVM.Runtime" version="7.2.4630.5" />
+            </group>
+        </dependencies>
+    </metadata>
+    <files>
+        <file src="..\TwitterKoreanProcessorCS.cs" target="content\TwitterKoreanProcessorCS.cs" />
+        <file src="..\Libraries\twitter-korean-processor.dll" target="lib\twitter-korean-processor.dll" />
+    </files>
+</package>
