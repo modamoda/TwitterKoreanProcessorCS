@@ -7,17 +7,13 @@
         <authors>modamoda</authors>
         <licenseUrl>http://opensource.org/licenses/MIT</licenseUrl>
         <requireLicenseAcceptance>false</requireLicenseAcceptance>
-        <description>Simple wrapper for twitter-korean-text
-        </description>
+        <description>Simple wrapper for twitter-korean-text</description>
         <summary>Simple wrapper for twitter-korean-text</summary>
         <releaseNotes>Alpha release</releaseNotes>
         <tags>Korean Twitter</tags>
         <dependencies>
             <group targetFramework=".NETFramework4.5">
-                <dependency id="IKVM.OpenJDK.Core" version="7.2.4630.5" />
-                <dependency id="IKVM.OpenJDK.Jdbc" version="7.2.4630.5" />
-                <dependency id="IKVM.OpenJDK.Util" version="7.2.4630.5" />
-                <dependency id="IKVM.Runtime" version="7.2.4630.5" />
+                <dependency id="IKVM" version="8.0.5449.1" />
             </group>
         </dependencies>
     </metadata>
