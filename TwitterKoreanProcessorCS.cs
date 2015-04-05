@@ -58,7 +58,7 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
         public static IEnumerable<KoreanToken> Tokenize(string text, bool normalize= true, bool stem = true, bool keepSpace = false)
         {
             var scalaResults = TwitterKoreanProcessor.tokenize(text, normalize, stem, keepSpace);
-            List<KoreanToken> results = ScalaSeqConverter<KoreanToken, KoreanTokenizer.KoreanToken>(
+            List<KoreanToken> results = Utils.ScalaCSHelper.ScalaSeqConverter<KoreanToken, KoreanTokenizer.KoreanToken>(
                 scalaResults, (scalaResult) => { return new KoreanToken(scalaResult); });
 
             return results;
@@ -67,7 +67,7 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
         public static IEnumerable<string> TokenizeToStrings(string text, bool normalize = true, bool stem = true, bool keepSpace = false)
         {
             var scalaResults = TwitterKoreanProcessor.tokenize(text, normalize, stem, keepSpace);
-            List<string> results = ScalaSeqConverter<string, KoreanTokenizer.KoreanToken>(
+            List<string> results = Utils.ScalaCSHelper.ScalaSeqConverter<string, KoreanTokenizer.KoreanToken>(
                 scalaResults, (scalaResult) => { return scalaResult.toString(); });
 
             return results;
@@ -75,54 +75,28 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
 
         public static List<KoreanSegment> TokenizeWithIndex(string text)
         {
-            throw new NotImplementedException();
+            var scalaResults = TwitterKoreanProcessor.tokenizeWithIndex(text);
+            List<KoreanSegment> results = Utils.ScalaCSHelper.ScalaSeqConverter<KoreanSegment, TwitterKoreanProcessor.KoreanSegment>(
+                scalaResults, 
+                (scalaResult) => new KoreanSegment(scalaResult));
+            return results;
         }
 
         public static KoreanSegmentWithText TokenizeWithIndexWithStemmer(string text)
         {
+            var scalaResult = TwitterKoreanProcessor.tokenizeWithIndexWithStemmer(text);
+
             throw new NotImplementedException();
-        }
+        }   
 
         public static List<string> ExtractPhrases(string text, bool filterSpam = false)
         {
             var scalaResults = TwitterKoreanProcessor.extractPhrases(text, filterSpam);
-            List<string> results = ScalaSeqStringConverter(scalaResults);
+            List<string> results = Utils.ScalaCSHelper.ScalaSeqStringConverter(scalaResults);
             
             return results;
         }
-
-        private static List<T> ScalaSeqConverter<T, TScala>(scala.collection.Seq sequences, Func<TScala,T> convertFunc)
-            where TScala : class
-            where T : class
-        {
-            List<T> results = new List<T>();
-
-            for (int i = 0; i < sequences.size(); i++)
-            {
-                TScala scalaResult = sequences.apply(i) as TScala;
-                T result = convertFunc(scalaResult);
-                results.Add(result);
-            }
-
-            return results;
-        }
-
-
-        private static List<string> ScalaSeqStringConverter(scala.collection.Seq sequences)
-        {
-            List<string> results = new List<string>();
-
-            for (int i = 0; i < sequences.size(); i++)
-            {
-                var scalaResult = sequences.apply(i);
-                string result = scalaResult.toString();
-                results.Add(result);
-            }
-
-            return results;
-        }
     }
-
 
     public class StemmedTextWithTokens
     {
@@ -148,13 +122,29 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
     {
         public string Text { get; set; }
         public List<KoreanSegment> Segments { get; set; }
+
+        public KoreanSegmentWithText(com.twitter.penguin.korean.TwitterKoreanProcessor.KoreanSegmentWithText scalaSegmentWithText)
+        {
+            this.Text = scalaSegmentWithText.text().toString();
+            var scalaSegments = scalaSegmentWithText.segments();
+            this.Segments = Utils.ScalaCSHelper.ScalaSeqConverter<KoreanSegment, TwitterKoreanProcessor.KoreanSegment>(
+                scalaSegments, 
+                (scalaSegment) => new KoreanSegment(scalaSegment));
+        }
     }
 
     public class KoreanSegment
     {
         public int Start { get; set; }
         public int Length { get; set; }
-        public KoreanToken token { get; set; }
+        public KoreanToken Token { get; set; }
+
+        public KoreanSegment(com.twitter.penguin.korean.TwitterKoreanProcessor.KoreanSegment scalaSegment)
+        {
+            this.Start = scalaSegment.start();
+            this.Length = scalaSegment.length();
+            this.Token = new KoreanToken(scalaSegment.token());
+        }
     }
 
     public class KoreanToken
@@ -186,5 +176,42 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
 
         // Functional POS
         Space, Others
+    }
+
+    namespace Utils
+    {
+        internal static class ScalaCSHelper
+        {
+            internal static List<T> ScalaSeqConverter<T, TScala>(scala.collection.Seq sequences, Func<TScala, T> convertFunc)
+                where TScala : class
+                where T : class
+            {
+                List<T> results = new List<T>();
+
+                for (int i = 0; i < sequences.size(); i++)
+                {
+                    TScala scalaResult = sequences.apply(i) as TScala;
+                    T result = convertFunc(scalaResult);
+                    results.Add(result);
+                }
+
+                return results;
+            }
+
+
+            internal static List<string> ScalaSeqStringConverter(scala.collection.Seq sequences)
+            {
+                List<string> results = new List<string>();
+
+                for (int i = 0; i < sequences.size(); i++)
+                {
+                    var scalaResult = sequences.apply(i);
+                    string result = scalaResult.toString();
+                    results.Add(result);
+                }
+
+                return results;
+            }
+        }
     }
 }
