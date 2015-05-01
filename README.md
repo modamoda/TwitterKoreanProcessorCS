@@ -2,7 +2,7 @@
 C# interface to [twitter-korean-text](https://github.com/twitter/twitter-korean-text) by [Twitter](https://github.com/twitter/) / 트위터에서 제공하는 한국어 형태소 분석기인 [twitter-korean-text](https://github.com/twitter/twitter-korean-text)를 C#에서 사용 가능하도록 wrapping 한 라이브러리입니다.
 
 ## Compatibility
-Currently wraps [twitter-korean-text 2.4.1](https://github.com/twitter/twitter-korean-text/tree/korean-text-2.4.1) / 현재 이 프로젝트는 [twitter-korean-text 2.4.1](https://github.com/twitter/twitter-korean-text/tree/korean-text-2.4.1)을 사용중입니다.
+Currently wraps [twitter-korean-text 3.1](https://github.com/twitter/twitter-korean-text/releases/tag/korean-text-3.1) / 현재 이 프로젝트는 [twitter-korean-text 3.1](https://github.com/twitter/twitter-korean-text/releases/tag/korean-text-3.1)을 사용중입니다.
 
 ## Usage
 ### Installation
