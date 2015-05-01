@@ -20,10 +20,10 @@ namespace Moda.Korean.TwitterKoreanProcessorCS.Sample
 
         public string StemSample()
         {
-            StemmedTextWithTokens stemResult = TwitterKoreanProcessorCS.Stem("어근화를 처리하는 예제입니다");
+            string stemResult = TwitterKoreanProcessorCS.Stem("어근화를 처리하는 예제입니다");
 
             // "어근화를 처리하다 예제이다"
-            return stemResult.Text;
+            return stemResult;
         }
 
         public string TokenizeSample0()
