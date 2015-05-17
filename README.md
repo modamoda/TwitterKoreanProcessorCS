@@ -2,7 +2,7 @@
 C# interface to [twitter-korean-text](https://github.com/twitter/twitter-korean-text) by [Twitter](https://github.com/twitter/) / 트위터에서 제공하는 한국어 형태소 분석기인 [twitter-korean-text](https://github.com/twitter/twitter-korean-text)를 C#에서 사용 가능하도록 wrapping 한 라이브러리입니다.
 
 ## Compatibility
-Currently wraps [twitter-korean-text 3.1](https://github.com/twitter/twitter-korean-text/releases/tag/korean-text-3.1) / 현재 이 프로젝트는 [twitter-korean-text 3.1](https://github.com/twitter/twitter-korean-text/releases/tag/korean-text-3.1)을 사용중입니다.
+Currently wraps [twitter-korean-text 4.1](https://github.com/twitter/twitter-korean-text/releases/tag/korean-text-4.1) / 현재 이 프로젝트는 [twitter-korean-text 4.1](https://github.com/twitter/twitter-korean-text/releases/tag/korean-text-4.1)을 사용중입니다.
 
 ## Usage
 ### Installation
@@ -16,7 +16,7 @@ Download from Nuget / Nuget을 이용하여 다운로드가 가능합니다.
     Console.WriteLine(string.Join(" / ", results));
     // 형태소Noun / 분석Noun / 을Josa / 하다Verb / ㅋㅋKoreanParticle
 
-Please see `Sample.cs` for more sample usages. / `Sample.cs` 파일에서 여러 예제를 확인하실 수 있습니다.
+Please see [`Sample.cs`](https://github.com/modamoda/TwitterKoreanProcessorCS/blob/master/Sample.cs) for more sample usages. / [`Sample.cs`](https://github.com/modamoda/TwitterKoreanProcessorCS/blob/master/Sample.cs) 파일에서 여러 예제를 확인하실 수 있습니다.
 
 ## How to Contribute
 This project is focusing on _wrapping_. If you want to improve natural language processing quality, please visit [twitter-korean-text](https://github.com/twitter/twitter-korean-text). / 이 프로젝트는 wrapping에 주안점을 두고 있습니다. 자연어 처리능력 향상과 관련된 내용은 [twitter-korean-text](https://github.com/twitter/twitter-korean-text)에서 제안/공헌이 가능합니다.
