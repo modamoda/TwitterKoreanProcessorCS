@@ -15,47 +15,74 @@ namespace Moda.Korean.TwitterKoreanProcessorCS.Sample
             string result = TwitterKoreanProcessorCS.Normalize("정규화(Normalize) 예제입니당~");
 
             // "정규화(Normalize) 예제입니다~"
-            return result; 
-        }
-
-        public string StemSample()
-        {
-            string stemResult = TwitterKoreanProcessorCS.Stem("어근화를 처리하는 예제입니다");
-
-            // "어근화를 처리하다 예제이다"
-            return stemResult;
-        }
-
-        public string TokenizeSample0()
-        {
-            var tokenizedResults = TwitterKoreanProcessorCS.TokenizeToStrings("토큰화의 기본설정은 정규화와 어근화를 진행하는것입니닼ㅋㅋ");
-
-            // "토큰Noun, 화의Noun, 기본Noun, 설정Noun, 은Josa, 정규화Noun, 와Josa, 어근Noun, 화Suffix, 를Josa, 진행Noun, 하다Verb, 이다Adjective, ㅋㅋKoreanParticle"
-            return string.Join(", ", tokenizedResults);
+            return result;
         }
 
         public string TokenizeSample1()
         {
-            var tokenizedWithoutNormalizationResults = TwitterKoreanProcessorCS.TokenizeToStrings(text: "정규화를 하지 않은 토큰화 예제입니당", normalize: false);
+            StringBuilder result = new StringBuilder();
 
-            // "정규화Noun, 를Josa, 하다Verb, 않다Verb, 토큰Noun, 화Suffix, 예제Noun, 이다Adjective"
-            return string.Join(", ", tokenizedWithoutNormalizationResults);
+            var tokens = TwitterKoreanProcessorCS.Tokenize("토큰화를 처리하는 예제입니다");
+            foreach (var token in tokens)
+            {
+                result.AppendFormat(format: "{0}({1}) [{2},{3}] / ",
+                    args: new object[] { token.Text, token.Pos.ToString(), token.Offset, token.Length });
+            }
+
+            // 토큰(ProperNoun) [0,2] / 화(Suffix) [2,1] / 를(Josa) [3,1] /  ... / 입니(Adjective) [12,2] / 다(Eomi) [14,1] /
+            return result.ToString();
         }
 
-        public string TokenizeSample2()
+        public string TokensToStringsSample1()
         {
-            var tokenizedWithoutStemResults = TwitterKoreanProcessorCS.TokenizeToStrings(text: "어근화를 하지 않은 토큰화 예제입니당ㅇㅇㅇ", stem: false);
+            var tokens = TwitterKoreanProcessorCS.Tokenize("토큰화를 처리하는 예제입니다. 문자열화는 덤");
+            var results = TwitterKoreanProcessorCS.TokensToStrings(tokens);
 
-            // "어근Noun, 화Suffix, 를Josa, 하지Verb, 않은Verb, 토큰Noun, 화Suffix, 예제Noun, 입니Adjective, 다Eomi, ㅇㅇKoreanParticle"
-            return string.Join(", ", tokenizedWithoutStemResults);
+            // 토큰 / 화 / 를 / 처리 / 하는 / 예제 / 입니 / 다 / . / 문자열 / 화 / 는 / 덤
+            return string.Join(" / ", results);
         }
 
-        public string ExtractPhraseSample()
+        public string StemSample1()
         {
-            var phrases = TwitterKoreanProcessorCS.ExtractPhrases("어구추출기능도 가능해유ㅠㅠㅠ", filterSpam: true);
+            StringBuilder result = new StringBuilder();
 
-            // "어구추출기능, 가능행, 어구, 추출, 기능, 가능"
-            return string.Join(", ", phrases);
+            var tokens = TwitterKoreanProcessorCS.Tokenize("토큰화 이후 어근화를 처리하는 예제입니다");
+            var stemmedTokens = TwitterKoreanProcessorCS.Stem(tokens);
+
+            foreach (var stemmedToken in stemmedTokens)
+            {
+                result.AppendFormat(format: "{0}({1}) [{2},{3}] / ",
+                    args: new object[] { stemmedToken.Text, stemmedToken.Pos.ToString(), stemmedToken.Offset, stemmedToken.Length });
+            }
+
+            // 토큰(ProperNoun) [0,2] / 화(Suffix) [2,1] /  (Space) [3,1] / 이후(Noun) [4,2] / ... / 예제(Noun) [17,2] / 이다(Adjective) [19,3] /
+            return result.ToString();
+        }
+
+        public string ExtractPhraseSample1()
+        {
+            StringBuilder result = new StringBuilder();
+
+            var tokens = TwitterKoreanProcessorCS.Tokenize("토큰화 처리 이후 어구를 추출하는 예제입니당ㅇㅇㅇ");
+            var phrases = TwitterKoreanProcessorCS.ExtractPhrases(tokens);
+
+            foreach (var phrase in phrases)
+            {
+                result.AppendLine("---------");
+                result.AppendFormat("{0} | ", phrase.Pos.ToString());
+                foreach (var token in phrase.Tokens)
+                {
+                    result.AppendFormat(format: "{0}({1}) [{2},{3}] / ",
+                        args: new object[] { token.Text, token.Pos.ToString(), token.Offset, token.Length });
+                }
+                result.AppendLine();
+            }
+
+            // Noun | 토큰(ProperNoun) [0,2] /
+            // Noun | 처리(Noun) [4,2] /
+            // ...
+            // Noun | 어구(Noun) [10,2] /
+            return result.ToString();
         }
     }
 }

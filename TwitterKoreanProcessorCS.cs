@@ -30,6 +30,7 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
     using com.twitter.penguin.korean.tokenizer;
     using ikvm.extensions;
 
+    using ScalaKoreanPhrase = com.twitter.penguin.korean.phrase_extractor.KoreanPhraseExtractor.KoreanPhrase;
 
     public static class TwitterKoreanProcessorCS
     {
@@ -47,34 +48,40 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
             return result;
         }
 
-        public static string Stem(string text)
+        public static IEnumerable<KoreanToken> Stem(IEnumerable<KoreanToken> tokens)
         {
-            var scalaResult = TwitterKoreanProcessor.stem(text);
-            return scalaResult.toString();
+            var scalaTokenSeq = Utils.ScalaCSHelper.ReverseScalaSeqConverter<KoreanTokenizer.KoreanToken, KoreanToken>(tokens, t => t.ToScalaToken());
+            var scalaResults = TwitterKoreanProcessor.stem(scalaTokenSeq);
+            var results = Utils.ScalaCSHelper.ScalaSeqConverter<KoreanToken, KoreanTokenizer.KoreanToken>(scalaResults, t => new KoreanToken(t));
+            return results;
         }
 
-        public static IEnumerable<KoreanToken> Tokenize(string text, bool normalize = true, bool stem = true, bool keepSpace = false)
+        public static IEnumerable<KoreanToken> Tokenize(string text)
         {
-            var scalaResults = TwitterKoreanProcessor.tokenize(text, normalize, stem, keepSpace);
+            var scalaResults = TwitterKoreanProcessor.tokenize(text);
             List<KoreanToken> results = Utils.ScalaCSHelper.ScalaSeqConverter<KoreanToken, KoreanTokenizer.KoreanToken>(
                 scalaResults, (scalaResult) => { return new KoreanToken(scalaResult); });
 
             return results;
         }
 
-        public static IEnumerable<string> TokenizeToStrings(string text, bool normalize = true, bool stem = true, bool keepSpace = false)
+        public static IEnumerable<string> TokensToStrings(IEnumerable<KoreanToken> tokens)
         {
-            var scalaResults = TwitterKoreanProcessor.tokenize(text, normalize, stem, keepSpace);
-            List<string> results = Utils.ScalaCSHelper.ScalaSeqConverter<string, KoreanTokenizer.KoreanToken>(
-                scalaResults, (scalaResult) => { return scalaResult.toString(); });
+            var scalaTokenSeq = Utils.ScalaCSHelper.ReverseScalaSeqConverter<KoreanTokenizer.KoreanToken, KoreanToken>(tokens, t => t.ToScalaToken());
+            var scalaResults = TwitterKoreanProcessor.tokensToStrings(scalaTokenSeq);
+            var results = Utils.ScalaCSHelper.ScalaSeqStringConverter(scalaResults);
 
             return results;
         }
 
-        public static List<string> ExtractPhrases(string text, bool filterSpam = false, bool enableHashTags = true)
+        public static List<KoreanPhrase> ExtractPhrases(IEnumerable<KoreanToken> tokens, bool filterSpam = false, bool enableHashTags = true)
         {
-            var scalaResults = TwitterKoreanProcessor.extractPhrases(text, filterSpam, enableHashTags);
-            List<string> results = Utils.ScalaCSHelper.ScalaSeqStringConverter(scalaResults);
+            var scalaTokenSeq = Utils.ScalaCSHelper.ReverseScalaSeqConverter<KoreanTokenizer.KoreanToken, KoreanToken>(tokens, t => t.ToScalaToken());
+            
+            // returns: Seq[KoreanPhrase]
+            var scalaResults = TwitterKoreanProcessor.extractPhrases(scalaTokenSeq, filterSpam, enableHashTags);
+            var results = Utils.ScalaCSHelper.ScalaSeqConverter<KoreanPhrase, ScalaKoreanPhrase>(scalaResults, p => new KoreanPhrase(p));
+
 
             return results;
         }
@@ -84,13 +91,46 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
     {
         public string Text { get; set; }
         public KoreanPos Pos { get; set; }
+        public int Offset { get; set; }
+        public int Length { get; set; }
         public bool Unknown { get; set; }
 
         public KoreanToken(com.twitter.penguin.korean.tokenizer.KoreanTokenizer.KoreanToken scalaToken)
         {
             this.Text = scalaToken.text().toString();
             this.Pos = (KoreanPos)scalaToken.pos().id();
+            this.Offset = scalaToken.offset();
+            this.Length = scalaToken.length();
             this.Unknown = scalaToken.unknown();
+        }
+
+        public com.twitter.penguin.korean.tokenizer.KoreanTokenizer.KoreanToken ToScalaToken()
+        {
+            var scalaKoreanPos = com.twitter.penguin.korean.util.KoreanPos.withName(this.Pos.ToString());
+            
+            var scalaToken = new com.twitter.penguin.korean.tokenizer.KoreanTokenizer.KoreanToken(
+                text: this.Text, 
+                pos: scalaKoreanPos, 
+                offset: this.Offset, 
+                length: this.Length, 
+                unknown: this.Unknown);
+
+            return scalaToken;
+        }
+    }
+
+    public class KoreanPhrase
+    {
+        public IEnumerable<KoreanToken> Tokens { get; set; }
+        public KoreanPos Pos { get; set; }
+
+        public KoreanPhrase(com.twitter.penguin.korean.phrase_extractor.KoreanPhraseExtractor.KoreanPhrase scalaPhrase)
+        {
+            var scalaTokens = scalaPhrase.tokens(); // Seq[KoreanToken]
+            var tokens = Utils.ScalaCSHelper.ScalaSeqConverter<KoreanToken, KoreanTokenizer.KoreanToken>(scalaTokens, t => new KoreanToken(t));
+
+            this.Tokens = tokens;
+            this.Pos = (KoreanPos)scalaPhrase.pos().id();
         }
     }
 
@@ -108,7 +148,8 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
         Email, URL, CashTag,
 
         // Functional POS
-        Space, Others
+        Space, Others,
+        ProperNoun
     }
 
     namespace Utils
@@ -144,6 +185,18 @@ namespace Moda.Korean.TwitterKoreanProcessorCS
                 }
 
                 return results;
+            }
+
+            internal static scala.collection.Seq ReverseScalaSeqConverter<TScala, T>(IEnumerable<T> items, Func<T, TScala> convertFunc)
+            {
+                var scalaList = new scala.collection.mutable.MutableList();
+                foreach (T item in items)
+                {
+                    TScala scalaItem = convertFunc(item);
+                    scalaList.appendElem(scalaItem);
+                }
+
+                return scalaList;
             }
         }
     }
