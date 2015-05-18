@@ -6,7 +6,7 @@ Currently wraps [twitter-korean-text 4.1](https://github.com/twitter/twitter-kor
 
 ## Usage
 ### Installation
-Download from Nuget / Nuget을 이용하여 다운로드가 가능합니다.
+Download from [Nuget](https://www.nuget.org/packages/Moda.Korean.TwitterKoreanProcessorCS/) / [Nuget](https://www.nuget.org/packages/Moda.Korean.TwitterKoreanProcessorCS/)을 이용하여 다운로드가 가능합니다.
 
     PM> Install-Package Moda.Korean.TwitterKoreanProcessorCS
 
