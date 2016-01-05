@@ -24,7 +24,7 @@ This project is focusing on _wrapping_. If you want to improve natural language 
 To make a contribution to this project, you can:
 - Discuss on [twitter-korean-text Google Groups](https://groups.google.com/forum/#!topic/twitter-korean-text/2YpG_BR2ZYM) / 구글 그룹스에 개설된 [twitter-korean-text](https://groups.google.com/forum/#!topic/twitter-korean-text/2YpG_BR2ZYM)에서 의견을 개진해 주세요.
 - Open an issue (reporting bugs, suggestion of features/improvements) / 버그를 발견하셨거나 개선점을 제안하실 경우 issue를 생성해 주시면 감사드리겠습니다.
-- Creating pull request (bug fix, sample codes) / 직접 버그를 해결하셨거나, 좋은 예제코드를 작성하신 경우 pull request를 생성해 주세요.
+- Creating pull request (bug fixes, sample codes) / 직접 버그를 해결하셨거나, 좋은 예제코드를 작성하신 경우 pull request를 생성해 주세요.
 
 ## Note
 I really appreciate to [Will Hohyon Ryu](https://github.com/nlpenguin) and Twitter, who are making great contribution to Korean by open sourcing Korean morpheme analyzer. / 한국어의 활용능력을 극대화 할 수 있도록 형태소 분석기를 오픈소스화 해 주신 트위터와 유호현님께 에 감사의 말씀을 드립니다.
